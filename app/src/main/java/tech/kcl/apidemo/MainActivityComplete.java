@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityComplete extends AppCompatActivity {
 
 	private PermissionHelper perms = new PermissionHelper(this);
 	private static String[] PERMISSIONS = {
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void printLn(final String msg) {
-		MainActivity.this.runOnUiThread(new Runnable() {
+		MainActivityComplete.this.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				output.setText(output.getText() + "\n" + msg);
@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
 		// You'll need this link:
 		// http://apidemo.markormesher.co.uk/example-1
 
+		printLn("Started request 1...");
+
 		Request req = new Request.Builder()
 				.url("http://apidemo.markormesher.co.uk/example-1")
 				.build();
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 		new OkHttpClient().newCall(req).enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
-				printLn("Request 1 failed :(");
+				printLn("Request 1 failed!");
 			}
 
 			@Override
@@ -115,11 +117,15 @@ public class MainActivity extends AppCompatActivity {
 				printLn(response.body().string());
 			}
 		});
+
+		//Toast.makeText(MainActivity.this, "Request 1: coming soon!", Toast.LENGTH_SHORT).show();
 	}
 
 	private void runRequest2() {
 		// You'll need this link:
 		// http://api.worldbank.org/countries/?format=json&per_page=300
+
+		printLn("Started request 2...");
 
 		Request req = new Request.Builder()
 				.url("http://api.worldbank.org/countries/?format=json&per_page=300")
@@ -128,52 +134,56 @@ public class MainActivity extends AppCompatActivity {
 		new OkHttpClient().newCall(req).enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
-				printLn("Request 2 failed :(");
+				printLn("Request 2 failed!");
 			}
 
 			@Override
-			public void onResponse(Call call, Response response) throws IOException {
+			public void onResponse(Call call, Response rawResponse) throws IOException {
 				try {
-					JSONArray jsonResponse = new JSONArray(response.body().string());
-					JSONArray countryList = jsonResponse.getJSONArray(1);
+					JSONArray response = new JSONArray(rawResponse.body().string());
+					JSONArray countryList = response.getJSONArray(1);
 					JSONObject country;
-					for (int i = 0; i < countryList.length(); ++i){
+					for (int i = 0; i < countryList.length(); ++i) {
 						country = countryList.getJSONObject(i);
 						printLn(country.getString("name"));
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
-					printLn("JSON Exception");
+					printLn("Request 2 failed!");
 				}
 			}
 		});
 
+		//Toast.makeText(MainActivity.this, "Request 2: coming soon!", Toast.LENGTH_SHORT).show();
 	}
 
 	private void runRequest3() {
 		// You'll need this link:
 		// http://apidemo.markormesher.co.uk/example-2
 
-		RequestBody body = new FormBody.Builder()
-				.add("msg", "We love pizza!!!!")
+		printLn("Started request 3...");
+
+		RequestBody requestBody = new FormBody.Builder()
+				.add("msg", "Hello HackKing's!")
 				.build();
 
 		Request req = new Request.Builder()
 				.url("http://apidemo.markormesher.co.uk/example-2")
-				.post(body)
+				//.method("POST", RequestBody.create(null, new byte[0]))
+				.post(requestBody)
 				.build();
 
 		new OkHttpClient().newCall(req).enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
-				printLn("Request 3 failed :(");
+				printLn("Request 3 failed!");
 			}
 
 			@Override
-			public void onResponse(Call call, Response response) throws IOException {
-				printLn("Request 3 worked :D");
+			public void onResponse(Call call, Response rawResponse) throws IOException {
+				printLn("Request 3 succeeded!");
 			}
 		});
 
+		//Toast.makeText(MainActivity.this, "Request 3: coming soon!", Toast.LENGTH_SHORT).show();
 	}
 }
